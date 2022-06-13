@@ -1,0 +1,221 @@
+@keyframes swing {
+    0% {
+      transform: rotate(0deg);
+    }
+  
+    10% {
+      transform: rotate(10deg);
+    }
+  
+    30% {
+      transform: rotate(0deg);
+    }
+  
+    40% {
+      transform: rotate(-10deg);
+    }
+  
+    50% {
+      transform: rotate(0deg);
+    }
+  
+    60% {
+      transform: rotate(5deg);
+    }
+  
+    70% {
+      transform: rotate(0deg);
+    }
+  
+    80% {
+      transform: rotate(-5deg);
+    }
+  
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+  
+  /*------scroll bar---------------------*/
+  
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 7px;
+  }
+  
+  ::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #525965;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #525965;
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: #525965;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border: 0px none #ffffff;
+    border-radius: 50px;
+  }
+  
+  ::-webkit-scrollbar-track:hover {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-track:active {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  /*------text style---------------------*/
+  
+  .text-gray {
+    color: #848484;
+  }
+  
+  .text-primary {
+    color: #202020 !important;
+  }
+  
+  .fw-bold {
+    font-weight: bold;
+  }
+  //
+  
+  /*Ovveride Navigator border and background:*/
+  .cytoscape-navigator {
+    border: 2px solid #bebebe !important;
+    background: white !important;
+    height: 25vh !important;
+    width: 22vw !important;
+    margin-bottom: 24px;
+    margin-right: 24px;
+    z-index: 2 !important;
+  }
+  
+  /*Add border to View container:*/
+  .cytoscape-navigator .cytoscape-navigatorView {
+    position: absolute;
+    z-index: 2;
+    border: 2px solid #124191;
+    background: transparent;
+  }
+  
+  /*Ovveride overlay container when mouse is over Navigator*/
+  .cytoscape-navigator:hover .cytoscape-navigatorOverlay {
+    border: 2px solid #124191;
+    background: transparent;
+  }
+  .cytoscape-navigatorOverlay {
+    z-index: 2 !important;
+  }
+  
+  /*Ovveride view's container when mouse is over view*/
+  .cytoscape-navigator.mouseover-view .cytoscape-navigatorView {
+    background-color: rgba(18, 65, 145, 0.3);
+  }
+  
+  /* icon */
+  .b-icon {
+    cursor: pointer;
+    &.openArch-icon {
+      color: rgb(9, 121, 186);
+    }
+    &.repeat-icon {
+      color: rgb(12, 165, 24);
+    }
+    &.delete-icon {
+      color: rgb(239, 80, 80);
+    }
+  }
+  
+  .b-icon:hover {
+    // background: rgb(233, 233, 233);
+    // border-radius: 50%;
+    animation: swing ease-in-out 0.5s 1 alternate;
+  }
+
+  // loading
+
+  .loadingModal .modal-content {
+    border: 0;
+    background: "#fff0";
+    .modal-header {
+      border: 0;
+    }
+  }
+
+.span-container {
+  width: 35px;
+  height: 35px;
+  /* transform: translate(-50% -50%);
+  position: absolute;
+  top: 42%;
+  left: 45%; */
+  position: relative;
+  margin: 0 auto;
+}
+
+.span-container span {
+  display: block;
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  animation: speed 2s infinite ease-in-out;
+}
+
+.span-container .one {
+  background: #ff8c21;
+  animation-delay: 1.5s;
+}
+
+.span-container .two {
+  background: #e342d8;
+  animation-delay: 1s;
+}
+
+.span-container .three {
+  background: #33afec;
+  animation-delay: 0.5s;
+}
+
+.span-container .four {
+  background: #5ed125;
+}
+
+@keyframes speed {
+  0% {
+    transform: translate(0%);
+    border-radius: 50%;
+  }
+
+  25% {
+    transform: translate(150%) scale(0.5);
+    border-radius: 0%;
+  }
+
+  50% {
+    transform: translate(150%, 150%);
+    border-radius: 50%;
+  }
+
+  75% {
+    transform: translate(0, 150%) scale(0.5);
+    border-radius: 0%;
+  }
+}
+  
