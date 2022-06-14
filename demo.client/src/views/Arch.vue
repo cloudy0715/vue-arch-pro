@@ -790,7 +790,9 @@ export default {
           },
         });
         cy.nodes().removeClass("notfilter", "highlight", "income_highlight");
-        cy.filter("node[type='Subnet']").removeData("label")
+        cy.filter(`node[?subnet],node[?vpc]`).move({
+          parent: null
+        })
 
         function spiltFilterString(val) {
           var p_type = val.split("=");
@@ -838,7 +840,7 @@ export default {
                 spiltFilterString(val)[0] != "resourceGroup" &&
                 spiltFilterString(val)[0] != "subnet"
               ) {
-                if (spiltFilterString(val)[0] != "vpc") {
+                if (spiltFilterString(val)[0] == "vpc") {
                   testCollection = testCollection.union(
                   cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
                   );
@@ -848,7 +850,11 @@ export default {
                 );
               } else {
                 console.log("this is resourceGroup & subnet");
-                
+                if (spiltFilterString(val)[0] == "subnet") {
+                  testCollection = testCollection.union(
+                  cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
+                  );
+                }
                 cy.nodes().map(function (ele) {
                   if (
                     ele.data(spiltFilterString(val)[0]) &&
@@ -889,7 +895,7 @@ export default {
                 }
                 if (queryType == "resourceGroup" || queryType == "subnet") {
                   let RG_array = ele.data(queryType);
-                  console.log("RG_array", RG_array);
+                  // console.log("RG_array", RG_array);
                   if (RG_array && RG_array.length > 0) {
                     RG_array.forEach((val) => {
                       if (structureNode[queryType].indexOf(val) == -1) {
@@ -964,10 +970,43 @@ export default {
               value.forEach((val, i) => {
                 let queryNodesWithParent = cy.collection();
                 console.log("===", val, "===");
+
                 if (
-                  spiltFilterString(val)[0].toLowerCase() != "vpc" ||
-                  spiltFilterString(val)[0].toLowerCase() != "subnet"
+                  spiltFilterString(val)[0] == "vpc" ||
+                  spiltFilterString(val)[0] == "subnet"
                 ) {
+                  console.log("===", spiltFilterString(val)[0], spiltFilterString(val)[0]!= "vpc", "===");
+                  const subnetNodes = cy.filter(function(ele){
+                    return !ele.data("label") && ele.data(spiltFilterString(val)[0]) && ele.data(spiltFilterString(val)[0]).length > 0
+                  })
+
+                  subnetNodes.map((ele)=>{
+                      if (ele.isChild()) {
+                      const origin_parent = ele.parent()
+                      ele.move({
+                        parent: ele.data(spiltFilterString(val)[0])[0]
+                      })
+                      cy.getElementById(ele.data(spiltFilterString(val)[0])[0]).move({
+                        parent: origin_parent.data("id")
+                      })
+                    } else {
+                      ele.move({
+                        parent: ele.data(spiltFilterString(val)[0])[0]
+                      })
+                    }
+                  })
+                  // cy.add({
+                  //   data: {
+                  //     type: toUpperCase(spiltFilterString(val)[0]),
+                  //     id: spiltFilterString(val)[1],
+                  //     label: "parent",
+                  //     text: `${toUpperCase(
+                  //       spiltFilterString(val)[0]
+                  //     )}:${spiltFilterString(val)[1].split("/")[1]}`,
+                  //   },
+                  // });
+
+                } else {
                   cy.add({
                     data: {
                       type: spiltFilterString(val)[0],
@@ -978,18 +1017,6 @@ export default {
                       text: `${toUpperCase(spiltFilterString(val)[0])}:${
                         spiltFilterString(val)[1]
                       }`,
-                    },
-                  });
-                } else {
-                  const nodesArn = cy.filter()
-                  cy.add({
-                    data: {
-                      type: toUpperCase(spiltFilterString(val)[0]),
-                      id: spiltFilterString(val)[1],
-                      label: "parent",
-                      text: `${toUpperCase(
-                        spiltFilterString(val)[0]
-                      )}:${spiltFilterString(val)[1].split("/")[1]}`,
                     },
                   });
                 }
@@ -1027,7 +1054,7 @@ export default {
                   fitQueryNodes.parent().filter("node[^label]")
                 );
                 queryNodesWithParent.map((ele) => {
-                  console.log("----", ele.data("name"), "----");
+                  // console.log("----", ele.data("name"), "----");
                   var fitParent = ele.data("fitParent");
                   var string = ele.data("fitQuery");
                   // console.log("testtest",ele.data("fitParent"))
@@ -1047,16 +1074,16 @@ export default {
                       }']`
                     );
                   }
-                  console.log(
-                    ele.data("name"),
-                    "fitParent:",
-                    ele.data("fitParent")
-                  );
-                  console.log(
-                    ele.data("name"),
-                    "fitQuery:",
-                    ele.data("fitQuery")
-                  );
+                  // console.log(
+                  //   ele.data("name"),
+                  //   "fitParent:",
+                  //   ele.data("fitParent")
+                  // );
+                  // console.log(
+                  //   ele.data("name"),
+                  //   "fitQuery:",
+                  //   ele.data("fitQuery")
+                  // );
                   outfitParent = toString(outfitParent, ele.data("fitParent"));
                   // if (toString(outfitParent, ele.data("fitParent")) == false) {
                   //   outfitParent.push(ele.data("fitParent"))
@@ -1081,7 +1108,7 @@ export default {
               let splitFitquery;
               splitFitquery = val.split(/\[|\]/).filter((i) => i && i.trim());
               splitFitquery.forEach((e) => {
-                console.log("eee", spiltFilterString(e)[0].toLowerCase());
+                // console.log("eee", spiltFilterString(e)[0].toLowerCase());
                 if (
                   spiltFilterString(e)[0] != "resourceGroup" ||
                   spiltFilterString(e) != "subnet"
@@ -1106,12 +1133,12 @@ export default {
               // const nodes = testCollection.filter(`node${val}`);
 
               let test = nodes.union(nodes.parent());
-              console.log(
-                "spiltFilterString",
-                `${spiltFilterString(val.split(/\[|\]/).reverse()[1])[0]}: ${
-                  spiltFilterString(val.split(/\[|\]/).reverse()[1])[1]
-                }`
-              );
+              // console.log(
+              //   "spiltFilterString",
+              //   `${spiltFilterString(val.split(/\[|\]/).reverse()[1])[0]}: ${
+              //     spiltFilterString(val.split(/\[|\]/).reverse()[1])[1]
+              //   }`
+              // );
               cy.add({
                 data: {
                   type: spiltFilterString(val.split(/\[|\]/).reverse()[1])[0],
