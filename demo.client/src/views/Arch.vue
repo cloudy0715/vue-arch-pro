@@ -67,22 +67,7 @@
           <b-button id="checkComparisonNodes" v-b-toggle.sidebar-comparison
             >Comparison</b-button
           >
-          <b-button id="AddNode" @click="AddNode()" class="mx-2"
-            >Edit your Architecture</b-button
-          >
-
-          <!-- <b-button v-b-toggle.sidebar-1>Add</b-button>
-          <b-sidebar id="sidebar-1" title="Add Resource" shadow>
-            <div class="px-3 py-2">
-              <b-form-select
-                v-model="selectedNode"
-                :options="AddNodeoption"
-              ></b-form-select>
-              {{ selectedNode }}
-            </div>
-            <b-button id="AddNode" @click="AddNode()">Add</b-button>
-          </b-sidebar> -->
-          <b-sidebar id="sidebar-comparison" title="Group Comparison" shadow>
+           <b-sidebar id="sidebar-comparison" title="Group Comparison" shadow>
             <div class="px-3 py-2 sidebar-comparison">
               <b-form-group label="" label-for="tags-component-select">
                 <!-- Prop `add-on-change` is needed to enable adding tags vie the `change` event -->
@@ -226,6 +211,27 @@
               </div>
             </div>
           </b-sidebar>
+          <!-- <b-button id="AddNode" @click="AddNode()" class="mx-2"
+            >Edit your Architecture</b-button
+          > -->
+
+          <b-button v-b-toggle.sidebar-1 class="mx-2">Edit your Architecture</b-button>
+          <b-sidebar id="sidebar-1" title="Add Resource" shadow>
+            <div class="px-3 py-2">
+              <b-form-select
+                v-model="selectedNode"
+                :options="AddNodeoption"
+              ></b-form-select>
+              {{ selectedNode }}
+            </div>
+            <b-button id="AddNode" @click="AddNode()">Add</b-button>
+          </b-sidebar>
+
+          <b-button id="grouping" class="mx-2"
+            >Group by Type</b-button
+          >
+
+         
         </div>
       </div>
       <div class="mt-2 filter-result">
@@ -698,69 +704,81 @@ export default {
         }).remove();
       }
 
+       $("#grouping").click(function() {
+          const group = async () => {
+          await grouping();
+          await cy.layout(fcose_layout).run();
+        };
+        group();
+
+        cy.layout(fcose_layout).run();
+      })
+
       $("#AddNode").click(function () {
-        // cy.add({
-        //   data: {
-        //     type: _this.selectedNode,
-        //     id: `${_this.selectedNode}[2]`,
-        //     name: _this.selectedNode,
-        //     mode: "test",
-        //   },
-        // });
-        // let img_url = _this.Mappingimg(_this.selectedNode);
-        // // cy.$(`#${_this.selectedNode}[2]`).data("url", img_url)
-        // cy.filter(`node[id='${_this.selectedNode}[2]']`).map((ele) => {
-        //   ele.data("url", img_url);
-        //   // console.log(ele.data("id"), ele.data("url"))
-        // });
+        cy.add({
+          data: {
+            type: _this.selectedNode,
+            id: `${_this.selectedNode}[2]`,
+            name: _this.selectedNode,
+            mode: "test",
+          },
+        });
+        let img_url = _this.Mappingimg(_this.selectedNode);
+        // cy.$(`#${_this.selectedNode}[2]`).data("url", img_url)
+        cy.filter(`node[id='${_this.selectedNode}[2]']`).map((ele) => {
+          ele.data("url", img_url);
+          // console.log(ele.data("id"), ele.data("url"))
+        });
 
         // const group = async () => {
         //   await grouping();
         //   await cy.layout(fcose_layout).run();
         // };
         // group();
-        let subnetArr = []
-        const subnetNodes = cy.filter(function(ele){
-          return !ele.data("label") && ele.data("subnet") && ele.data("subnet").length > 0
-        })
-        subnetNodes.map((ele)=>{
-          console.log("Before subnetArr =====>",subnetArr)
-          let subnetVal = ""
-          ele.data("subnet").forEach((val, i) => {
-            if(i != ele.data("subnet").length-1) {
-              subnetVal += `${val.split("/")[1]} & `
-            } else {
-              subnetVal += `${val.split("/")[1]}`
-            }
-          })
-          console.log(ele.data("name"), subnetVal)
-          if(subnetArr.indexOf(subnetVal) == -1) {
-            console.log("not in arr", subnetArr.indexOf(subnetVal))
-            subnetArr.push(subnetVal)
-            // cy.add({
-            //   data: {
-            //     type: "subnet",
-            //     id: ele.data("subnet")[0],
-            //     label: "parent",
-            //     text: subnetVal
-            //   },
-            // })
-          }
-          if (ele.isChild()) {
-            const origin_parent = ele.parent()
-            ele.move({
-              parent: ele.data("subnet")[0]
-            })
-            cy.getElementById(subnetVal).move({
-              parent: origin_parent.data("id")
-            })
-          }
-            // ele.move({
-            //   parent: subnetVal
-            // })
+
+        //
+        // let subnetArr = []
+        // const subnetNodes = cy.filter(function(ele){
+        //   return !ele.data("label") && ele.data("subnet") && ele.data("subnet").length > 0
+        // })
+        // subnetNodes.map((ele)=>{
+        //   console.log("Before subnetArr =====>",subnetArr)
+        //   let subnetVal = ""
+        //   ele.data("subnet").forEach((val, i) => {
+        //     if(i != ele.data("subnet").length-1) {
+        //       subnetVal += `${val.split("/")[1]} & `
+        //     } else {
+        //       subnetVal += `${val.split("/")[1]}`
+        //     }
+        //   })
+        //   console.log(ele.data("name"), subnetVal)
+        //   if(subnetArr.indexOf(subnetVal) == -1) {
+        //     console.log("not in arr", subnetArr.indexOf(subnetVal))
+        //     subnetArr.push(subnetVal)
+        //     // cy.add({
+        //     //   data: {
+        //     //     type: "subnet",
+        //     //     id: ele.data("subnet")[0],
+        //     //     label: "parent",
+        //     //     text: subnetVal
+        //     //   },
+        //     // })
+        //   }
+        //   if (ele.isChild()) {
+        //     const origin_parent = ele.parent()
+        //     ele.move({
+        //       parent: ele.data("subnet")[0]
+        //     })
+        //     cy.getElementById(subnetVal).move({
+        //       parent: origin_parent.data("id")
+        //     })
+        //   }
+        //     // ele.move({
+        //     //   parent: subnetVal
+        //     // })
           
-          console.log("After subnetArr =====>",subnetArr)
-        })
+        //   console.log("After subnetArr =====>",subnetArr)
+        // })
         cy.layout(fcose_layout).run();
       });
 
@@ -840,21 +858,21 @@ export default {
                 spiltFilterString(val)[0] != "resourceGroup" &&
                 spiltFilterString(val)[0] != "subnet"
               ) {
-                if (spiltFilterString(val)[0] == "vpc") {
-                  testCollection = testCollection.union(
-                  cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
-                  );
-                }
+                // if (spiltFilterString(val)[0] == "vpc") {
+                //   testCollection = testCollection.union(
+                //   cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
+                //   );
+                // }
                 testCollection = testCollection.union(
                   cy.filter(`node[${val}]`)
                 );
               } else {
                 console.log("this is resourceGroup & subnet");
-                if (spiltFilterString(val)[0] == "subnet") {
-                  testCollection = testCollection.union(
-                  cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
-                  );
-                }
+                // if (spiltFilterString(val)[0] == "subnet") {
+                //   testCollection = testCollection.union(
+                //   cy.filter(`node[id='${spiltFilterString(val)[1]}'`)
+                //   );
+                // }
                 cy.nodes().map(function (ele) {
                   if (
                     ele.data(spiltFilterString(val)[0]) &&
@@ -864,11 +882,13 @@ export default {
                       .indexOf(spiltFilterString(val)[1]) != -1
                   ) {
                     testCollection = testCollection.union(ele);
+                    console.log(ele.data("type"), ele.data("name"))
                   }
                 });
               }
             }
           });
+         
           // 修改過的(END)
 
           const queryNodes_col = cy.collection().union(testCollection);
@@ -1185,12 +1205,14 @@ export default {
                 ) {
                   console.log("get resourceGroup or subnet");
                   fitQueryNodes = testCollection.filter(function (element) {
-                    console.log(
-                      element
-                        .data(spiltFilterString(val)[0])
-                        .indexOf(spiltFilterString(val)[1])
-                    );
+                    // console.log(
+                    //   element
+                    //     .data(spiltFilterString(val)[0])
+                    //     .indexOf(spiltFilterString(val)[1])
+                    // );
                     return (
+                      element.data(spiltFilterString(val)[0]) &&
+                      element.data(spiltFilterString(val)[0]).length > 0 &&
                       element
                         .data(spiltFilterString(val)[0])
                         .indexOf(spiltFilterString(val)[1]) != -1
@@ -1201,8 +1223,8 @@ export default {
                   );
                 } else {
                   queryNodesWithParent = queryNodesWithParent
-                    .union(queryNodes.filter(`node[${val}]`))
-                    .union(queryNodes.filter(`node[${val}]`).parent());
+                    .union(testCollection.filter(`node[${val}]`))
+                    .union(testCollection.filter(`node[${val}]`).parent());
                 }
 
                 queryNodesWithParent.filter("node[^parent][^label]").move({
